@@ -1,24 +1,50 @@
 from django.contrib import admin
-from .models import Solicitud
+from .models import Ingresomascotas, Ingresomascotas_solicitud
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin
 
 
 
-class SolicitudResources(resources.ModelResource):
+
+
+class IngresomascotasResources(resources.ModelResource):
     fields = (
-        'persona',
-        'mascota',
-        'razones',
+        'alimentacion',
+        'edad',
+        'nombre',
+        'fechaderescate',
+        'raza',
+        'enfermedadespasadas',
+        'id',
     )
     class Meta:
-        model = Solicitud
+        model = Ingresomascotas
 
-@admin.register(Solicitud)
-class SolicitudAdmin(ImportExportModelAdmin):
-    resource_class = SolicitudResources
+@admin.register(Ingresomascotas)
+class IngresomascotasAdmin(ImportExportModelAdmin):
+    resource_class = IngresomascotasResources
     list_display = (
-        'persona',
+        'alimentacion',
+        'edad',
+        'nombre',
+        'fechaderescate',
+        'raza',
+        'enfermedadespasadas',
+        'id',
+    )
+
+class Ingresomascotas_solicitudResources(resources.ModelResource):
+    fields = (
+        'adoptante',
         'mascota',
-        'razones',
+    )
+    class Meta:
+        model = Ingresomascotas_solicitud
+
+@admin.register(Ingresomascotas_solicitud)
+class Ingresomascotas_solicitudAdmin(ImportExportModelAdmin):
+    resource_class = Ingresomascotas_solicitudResources
+    list_display = (
+        'adoptante',
+        'mascota',
     )
