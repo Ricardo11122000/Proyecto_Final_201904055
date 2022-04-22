@@ -1,24 +1,21 @@
 from django.contrib import admin
-from .models import Solicitud
+from .models import Profile
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin
 
 
-
-class SolicitudResources(resources.ModelResource):
+class ProfileResources(resources.ModelResource):
     fields = (
-        'persona',
-        'mascota',
-        'razones',
+        'user',
+        'permiso',
     )
     class Meta:
-        model = Solicitud
+        model = Profile
 
-@admin.register(Solicitud)
-class SolicitudAdmin(ImportExportModelAdmin):
-    resource_class = SolicitudResources
+@admin.register(Profile)
+class ProfileAdmin(ImportExportModelAdmin):
+    resource_class = ProfileResources
     list_display = (
-        'persona',
-        'mascota',
-        'razones',
+        'user',
+        'permiso',
     )

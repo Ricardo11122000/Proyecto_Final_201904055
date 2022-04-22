@@ -1,85 +1,122 @@
-from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
-from django.urls import reverse_lazy
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView
-from IngresoMascotas.models import Ingresomascotas_solicitud
-from adopcion.forms import SolicitudForm
-from adopcion.models import Persona, Solicitud
-from adopcion.forms import PersonaForm, SolicitudForm
+from email.policy import default
+from django.shortcuts import render, redirect
+from django.views.generic import View
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib import messages
+from .forms import UserRegisterForm
+from django.contrib.auth import login, logout, authenticate
+from axes.models import *
+from .forms import *
+from django.contrib.auth.models import User 
+import psycopg2
 
 
-def Solicitudes(request):
+
+
+def acceder(request):
     
-    Adopciones = Ingresomascotas_solicitud.objects.all()
-    Solicitudes = Solicitud.objects.all()
-    
-    return render(request, "ProyectoFinal2App/SolicitudAdopcion.html",{"Solicitudes": Solicitudes, "Adopciones": Adopciones})
-    
-class SolicitudCreate(CreateView):
-    model = Solicitud
-    template_name = 'ProyectoFinal2App/solicitud_form.html'
-    form_class = SolicitudForm
-    second_form_class = PersonaForm
-    success_url = reverse_lazy('Inicio')
-    
-    def get_context_data(self, **kwargs):
-        context = super(SolicitudCreate, self).get_context_data(**kwargs) 
-        if 'form' not in context:
-            context['form'] = self.form_class(self.request.GET)
-        if 'form2' not in context:
-            context['form2'] = self.second_form_class(self.request.GET)
-        return context
-        
-    def post(self, request, *args,  **kwargs):
-        self.object = self.get_object
-        form = self.form_class(request.POST)
-        form2 = self.second_form_class(request.POST)
-        if form.is_valid() and form2.is_valid():
-            solicitud = form.save(commit=False)
-            solicitud.persona = form2.save()
-            solicitud.save()
-            return HttpResponseRedirect(self.get_success_url())
+    if request.method == "POST":
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            nombre_usuario = form.cleaned_data.get("username")
+            password = form.cleaned_data.get("password")
+            usuario = authenticate(username=nombre_usuario, password=password, request=request)
+            if usuario is not None:
+                login(request, usuario)
+                return redirect("Inicio")
+            else:
+                messages.error(request, "Los datos son incorrectos")
         else:
-            return self.render_to_response(self.get_context_data(form=form, form2=form2))
-        
-        
-class SolicitudUpdate(UpdateView):
-    model = Solicitud
-    second_model = Persona
-    form_class = SolicitudForm
-    template_name = 'ProyectoFinal2App/solicitud_form.html'
-    second_form_class = PersonaForm
-    success_url = reverse_lazy('solicitud_listar')
+            messages.error(request, "Los datos son incorrectos")
+            Fallos = form.cleaned_data
+            nombre_user = Fallos['username']
+            intentos = AccessAttempt.objects.get(username = nombre_user)
+            conexion = psycopg2.connect(
+            host = "localhost",
+            port =  "5432",
+            user = "postgres", 
+            password = "11122000", 
+            dbname = "BaseDeDatosProyectoFinal")
+            cursor = conexion.cursor()
+            SQL = f"SELECT failures_since_start FROM axes_accessattempt WHERE username = '{nombre_user}';"
+            cursor.execute(SQL)
+            informacion = cursor.fetchall()
+            for numero in informacion:
+                for numero_intentos in numero:
+                    print (numero_intentos)
+            if numero_intentos >= 3:
+                return redirect('Captcha')
+    
+    form = AuthenticationForm()
+    context = { "form": form}
+    return render(request, "ProyectoFinal2App/Login.html", context)
 
-    def get_context_data(self, **kwargs):
-        context = super(SolicitudUpdate, self).get_context_data(**kwargs)
-        pk = self.kwargs.get('pk', 0)
-        solicitud = self.model.objects.get(id=pk)
-        persona = self.second_model.objects.get(id=solicitud.persona_id)
-        if 'form' not in context:
-            context['form'] = self.form_class()
-        if 'form2' not in context:
-            context['form2'] = self.second_form_class(instance=persona)
-        context['id'] = pk
-        return context
 
-    def post(self, request, *args, **kwargs):
-        self.object = self.get_object
-        id_solicitud = kwargs['pk']
-        solicitud = self.model.objects.get(id=id_solicitud)
-        persona = self.second_model.objects.get(id=solicitud.persona_id)
-        form = self.form_class(request.POST, instance=solicitud)
-        form2 = self.second_form_class(request.POST, instance=persona)
-        if form.is_valid() and form2.is_valid():
-            form.save()
-            form2.save()
-            return HttpResponseRedirect(self.get_success_url())
+class RegistroUsuario(View):
+    # noinspection PyMethodMayBeStatic
+    def get(self, request):
+        form = UserRegisterForm()
+        return render(request, "ProyectoFinal2App/RegistroUsuario.html", {"form": form})
+
+    # noinspection PyMethodMayBeStatic
+    def post(self, request):
+        form = UserRegisterForm(request.POST)
+        if form.is_valid():
+            usuario = form.save()
+            nombre_usuario = form.cleaned_data.get("username")
+            login(request, usuario, backend='django.contrib.auth.backends.ModelBackend')
+            return redirect("Inicio")
         else:
-            return HttpResponseRedirect(self.get_success_url())
+            for msg in form.error_messages:
+                messages.error(request, form.error_messages[msg])
+            return render(request, "ProyectoFinal2App/RegistroUsuario.html", {"form": form})
 
 
-class SolicitudDelete(DeleteView):
-    model = Solicitud
-    template_name = 'ProyectoFinal2App/solicitud_delete.html'
-    success_url = reverse_lazy('solicitud_listar')
+def cerrar_sesion(request):
+    logout(request)
+    return redirect("Inicio")
+
+def profile(request):
+    if request.method == 'POST':
+        u_form = UserUpdateForm(request.POST, instance=request.user)
+        p_form = ProfileUpdateForm(request.POST, request.FILES,  instance=request.user.profile)
+
+        if u_form.is_valid() and p_form.is_valid():
+            u_form.save()
+            p_form.save()
+            return redirect("Inicio")
+    else:
+        u_form = UserUpdateForm(instance=request.user)
+        p_form = ProfileUpdateForm(instance=request.user.profile)
+    
+    context = {
+        'u_form': u_form,
+        'p_form': p_form
+    }
+    
+    return render(request, 'ProyectoFinal2App/Profile.html', context)
+
+def profile_admin(request, id):
+    usuario=User.objects.get(id=id)
+    profile=Profile.objects.get(id=id)
+    if request.method == 'POST': 
+        u_form = UserUpdateForm(request.POST, instance=usuario)
+        p_form = ProfileUpdateForm_admin(request.POST, instance=profile)
+
+        if u_form.is_valid() and p_form.is_valid():
+            u_form.save()
+            p_form.save()
+            return redirect("Inicio")
+    else:
+        u_form = UserUpdateForm(instance=usuario)
+        p_form = ProfileUpdateForm_admin(instance=usuario.profile)
+    
+    context = {
+        'u_form': u_form,
+        'p_form': p_form
+    }
+    
+    return render(request, 'ProyectoFinal2App/Profile.html', context)
+
+
 
