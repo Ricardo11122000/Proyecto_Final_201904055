@@ -1,0 +1,16 @@
+{% extends "ProyectoFinal2App/base.html" %}
+
+{%load static%}
+{% load crispy_forms_tags %}
+
+{%block content%}
+<form method="POST">
+        {% csrf_token %}
+        <h3> Desea desbloquear al usuario: {{Intento.username}}?</h3>
+
+        <button class="btn btn-danger" type="submit">Si</button>
+        <a class="btn btn-default" href="{%url 'DesbloquearUsuarios' %}">Cancelar</a>
+
+</form>
+
+{% endblock %}

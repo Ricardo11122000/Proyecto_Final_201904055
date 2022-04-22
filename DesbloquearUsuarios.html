@@ -1,0 +1,49 @@
+{% extends "ProyectoFinal2App/base.html" %}
+
+{%load static%}
+
+{%block content%}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+            <table class="table table-sm table-hover">
+                <thread>
+                    <tr>
+                        <td>Username</td>
+                        <td>Direccion ip</td>
+                        <td>Numero de intentos</td>
+                        <td colspan="2">Acciones</td>
+                    </tr>
+                </thread>
+                <tbody>
+                {% if IntentosLogin %}
+                {% for usuario in Usuarios %}
+                {% for intento in IntentosLogin %}
+                {% if usuario.username == intento.username and intento.failures_since_start >= 6%}
+                <tr>
+                    <td>{{ intento.username }}</td>
+                    <td>{{ intento.ip_address }}</td>
+                    <td>{{ intento.failures_since_start }}</td>
+                    <td>
+                       <a class="btn btn-primary btn-sm"
+                           href="{% url 'UsuarioDesbloquear' intento.id %}">Desbloquear</a> 
+                    </td>
+                </tr>
+                {% else %}
+                {% endif %}
+                {% endfor %}
+                {% endfor %}
+                {% else %}
+                <h4 class="alert alert-warning" role="alert">No hay usuarios registrados.</h4>
+                {% endif %}
+                </tbody>
+            </table>
+            
+        </div>
+        <div class="col-md-2"></div>
+    </div>
+</div>
+
+{% endblock %}

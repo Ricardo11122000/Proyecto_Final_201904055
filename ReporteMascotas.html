@@ -1,0 +1,87 @@
+<head>
+
+    {%load static%}
+
+    <!-- Bootstrap -->
+    <link href="{% static 'ProyectoFinal2App/vendor/bootstrap/css/bootstrap.min.css'%}" rel="stylesheet">
+
+     <!-- Fonts -->
+    
+     <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300&display=swap" rel="stylesheet"> 
+     <link href="https://fonts.googleapis.com/css?family=Lora:400,400i,700,700i" rel="stylesheet">
+     
+
+    <!-- Styles -->
+    <link href="{% static 'ProyectoFinal2App/css/gestion.css'%}" rel="stylesheet">
+
+    
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+                <table class="table table-sm table-hover">
+                    <thread>
+                        <tr>
+                            <td>Nombre</td>
+                            <td>Alimentacion</td>
+                            <td>Edad</td>
+                            <td>Raza</td>
+                            <td>Estado</td>
+                        </tr>
+                    </thread>
+                    <tbody>
+                    {%for mascotaingresada in mascotas%}
+                    <tr>
+                        <td>{{ mascotaingresada.nombre }}</td>
+                        <td>{{ mascotaingresada.alimentacion }} 
+                        <td>{{ mascotaingresada.edad }}</td>
+                        <td> {{mascotaingresada.raza}}</td>
+                        {%for mascotaadoptada in Mascotas_adoptadas%}
+                        {%if mascotaadoptada.mascota.nombre == mascotaingresada.nombre%}
+                        <td>Mascota adoptada</td>
+                        {%else%}
+                        {%endif%}
+                        {%endfor%}
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-2"></div>
+        </div>
+    </div>
+
+
+</body>
+
+
+ <!-- Navbar -->
+
+  
+
+
+ 
+{% block content %}
+
+
+
+
+ {% endblock %} 
+
+  
+
+      
+	        
+
+    <!-- Bootstrap -->
+    <script src="{% static 'ProyectoFinal2App/vendor/jquery/jquery.min.js'%}"></script>
+    <script src="{% static 'ProyectoFinal2App/vendor/bootstrap/js/bootstrap.bundle.min.js'%}"></script>
+
+</body>
+
+
+</html>

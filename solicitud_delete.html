@@ -1,0 +1,22 @@
+{% extends "ProyectoFinal2App/base.html" %}
+
+{%load static%}
+{% block bienvenido %}{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-3"></div>
+        <div class="col-md-6">
+            <form role="form" method="post">
+                {% csrf_token %}
+                <h3>Desea eliminar el registro # {{ object.id }} de {{ object.persona.nombre }} {{ object.persona.apellidos }} ?</h3>
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-danger">Si, Eliminar</button>
+                <a class="btn btn-default" href="{% url 'solicitud_listar' %}">Cancelar</a>
+            </form>
+        </div>
+        <div class="col-md-3"></div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "ProyectoFinal2App/base.html" %}
+
+{%load static%}
+
+{% load crispy_forms_tags %}
+
+{%block content%}
+
+<div>
+    
+<p>   
+    {% if submitted  %}
+
+        Captcha correcto.
+
+    {% else %}
+
+    <div style="width: 45%; margin: auto;">
+
+        <h3>Cuidado, usted ha llegado a mas de 3 intentos fallidos.</h3>
+        <p1></p1>
+        <h3>Si llega a 6 intentos, se bloqueara automaticamente su cuenta.</h3>
+        <p1></p1>
+        <h3>Ingrese el captcha para intentar otra vez.</h3>
+        <p1></p1>
+
+        <form method="POST" eclass="text-center mt-5">                            
+            {{ form|crispy }}
+            
+            <button type="submit" class="btn btn-success">Enviar</button>
+        </form>
+
+    </div>
+
+    {% endif %}
+</p>
+
+</div>
+
+{% endblock %}

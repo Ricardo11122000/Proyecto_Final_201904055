@@ -1,0 +1,177 @@
+<html>
+
+<head>
+
+    {%load static%}
+
+    <!-- Bootstrap -->
+    <link href="{% static 'ProyectoFinal2App/vendor/bootstrap/css/bootstrap.min.css'%}" rel="stylesheet">
+
+     <!-- Fonts -->
+    
+     <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300&display=swap" rel="stylesheet"> 
+     <link href="https://fonts.googleapis.com/css?family=Lora:400,400i,700,700i" rel="stylesheet">
+     
+
+    <!-- Styles -->
+    <link href="{% static 'ProyectoFinal2App/css/gestion.css'%}" rel="stylesheet">
+</head>
+
+<body>
+
+    <h1 class="site-heading text-center text-white d-none d-lg-block">
+      
+        <span class="site-heading-lower">Adopta a un amigo</span>
+      </h1>
+
+      <div style="text-align: right; margin-right: 50px;color: white;"><font size="5">
+
+        {%if user.is_authenticated%}
+
+        <img class="rounded-circle account-img" src="{{user.profile.image.url}}" width = "10%">
+
+        <h3>Bienvenido {{user.username}} &nbsp;&nbsp; <a href="{% url 'cerrar_sesion'%}">Cerrar sesion</a></h3>
+
+        {%else%}
+
+        <a href="{% url 'acceder'%}">No ha iniciado sesion</a>
+
+        {%endif%}
+
+
+      </font></div>
+
+
+ <!-- Navbar -->
+ <nav class="navbar navbar-expand-lg navbar-dark py-lg-4" id="mainNav">
+    <div class="container">
+      <a class="navbar-brand text-uppercase text-expanded font-weight-bold d-lg-none" href="home.html">Se parte de este movimiento</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarResponsive">
+        <ul class="navbar-nav mx-auto">
+          <li class="nav-item {% if request.path == '/' %}active{%endif%} px-lg-4">
+            <a class="nav-link text-uppercase text-expanded" href="{% url 'Inicio'%}">Pagina principal</a>
+          </li>
+          {%if user.is_authenticated%}
+
+          <li class="nav-item {% if request.path == '/profile/' %}active{%endif%} px-lg-4">
+            <a class="nav-link text-uppercase text-expanded"  href="{% url 'profile'%}">Editar informacion</a>
+          </li>
+
+          {%else%}
+
+          <li class="nav-item {% if request.path == '/acceder/' %}active{%endif%} px-lg-4">
+            <a class="nav-link text-uppercase text-expanded"  href="{% url 'acceder'%}">Inicio de sesion</a>
+          </li>
+
+          {%endif%}
+          
+          {% if user.is_authenticated and user.profile.permiso == "administrador" %}
+          <li class="nav-item {% if request.path == '/usuarios/' %}active{%endif%} px-lg-4">
+            <a class="nav-link text-uppercase text-expanded"  href="{% url 'usuarios'%}">Lista de usuarios</a>
+          </li>
+          {%else%}
+          {%endif%}
+          {% if user.is_authenticated and user.profile.permiso == "administrador" or user.profile.permiso == "Colaborador"%}
+          <li class="nav-item  {% if request.path == '/ingresomascotas/'%}active{%endif%}  px-lg-4">
+            <a class="nav-link text-uppercase text-expanded" href="{% url 'IngresoMascotas'%}">Inscribir mascotas</a>
+          </li>
+          {%else%}
+          {%endif%}
+          <li class="nav-item {% if request.path == '/mascotasactuales/'%}active{%endif%} px-lg-4">
+            <a class="nav-link text-uppercase text-expanded" href="{% url 'MascotasActuales'%}">Mascotas</a>
+          </li>
+          {% if user.is_authenticated and user.profile.permiso == "Cliente"%}
+          <li class="nav-item  {% if request.path == '/solicitudnueva/'%}active{%endif%} px-lg-4">
+            <a class="nav-link text-uppercase text-expanded" href="{% url 'solicitud_crear'%}">Mi mascota</a>
+          </li>
+          {% else %}
+          <li class="nav-item  {% if request.path == '/solicitudnueva/'%}active{%endif%} px-lg-4">
+            <a class="nav-link text-uppercase text-expanded" href="{% url 'solicitud_crear'%}">Adoptar una mascota</a>
+          </li>
+          {% endif %}
+          {% if user.is_authenticated and user.profile.permiso == "administrador" or user.profile.permiso == "Colaborador"%}
+          <li class="nav-item  {% if request.path == '/solicitudadopcion/'%}active{%endif%}  px-lg-4">
+            <a class="nav-link text-uppercase text-expanded" href="{% url 'solicitud_listar'%}">Lista de solicitudes</a>
+          </li>
+          {%else%}
+          {%endif%}
+         
+        </ul>
+      </div>
+    </div>
+  </nav>
+ 
+{% block content %}
+
+
+<section class="page-section clearfix">
+    <div class="container">
+      <div class="intro">
+        <img class="intro-img img-fluid mb-3 mb-lg-0 rounded" src="{{user.ingresomascotas_solicitud.mascota.foto.url}}" alt="" style="width: 50%;">
+        <div class="intro-text left-0 text-center bg-faded p-5 rounded">
+          <h2 class="section-heading mb-4" >
+            <span class="section-heading-upper">{{user.ingresomascotas_solicitud.mascota.nombre}}</span>  
+          </h2>
+          <p class="mb-3">Alimentacion: {{user.ingresomascotas_solicitud.mascota.alimentacion}}</p>
+          <p class="mb-3">Edad: {{user.ingresomascotas_solicitud.mascota.edad}}</p>
+          <p class="mb-3">Raza: {{user.ingresomascotas_solicitud.mascota.raza}}</p>
+          
+          {% if user.is_authenticated and user.profile.permiso == "Cliente"%}
+          <a class="btn btn-primary" href="{% url 'mascota_edit_cliente' user.ingresomascotas_solicitud.mascota.id%}">Editar</a>
+          {%else%}
+          {%endif%}
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+ {% endblock %} 
+
+  
+
+
+
+    <!-- Footer -->
+    <footer class="footer text-faded text-center py-5">
+      <div class="container">
+        <p class="m-0">
+	        <a href="#" class="link">
+	          <span class="fa-stack fa-lg">
+	            <i class="fa fa-circle fa-stack-2x"></i>
+	            <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+	          </span>
+	        </a>
+	        <a href="#" class="link">
+	          <span class="fa-stack fa-lg">
+	            <i class="fa fa-circle fa-stack-2x"></i>
+	            <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+	          </span>
+	        </a>
+	        <a href="#" class="link">
+	          <span class="fa-stack fa-lg">
+	            <i class="fa fa-circle fa-stack-2x"></i>
+	            <i class="fa fa-instagram fa-stack-1x fa-inverse"></i>
+	          </span>
+	        </a>
+	    </p>
+        <p class="m-0 mbt">
+        	<a href="sample.html" class="link">Política de privacidad</a> ·
+        	<a href="sample.html" class="link">Aviso legal</a> ·
+        	<a href="sample.html" class="link">Cookies</a>
+		</p>
+        <p class="m-0 mbt1">&copy; Adopcion de mascotas 2022</p>
+      </div>
+	</footer>
+
+    <!-- Bootstrap -->
+    <script src="{% static 'ProyectoFinal2App/vendor/jquery/jquery.min.js'%}"></script>
+    <script src="{% static 'ProyectoFinal2App/vendor/bootstrap/js/bootstrap.bundle.min.js'%}"></script>
+
+</body>
+
+
+</html>

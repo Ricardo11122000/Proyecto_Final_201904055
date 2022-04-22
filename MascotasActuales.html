@@ -1,0 +1,48 @@
+{% extends "ProyectoFinal2App/base.html" %}
+
+{%load static%}
+
+{%block content%}
+
+{%for mascotaingresada in ingresomascotas%}
+
+
+
+<section class="page-section clearfix">
+    <div class="container">
+      <div class="intro">
+        <img class="intro-img img-fluid mb-3 mb-lg-0 rounded" src="{{mascotaingresada.foto.url}}" alt="" style="width: 50%;">
+        <div class="intro-text left-0 text-center bg-faded p-5 rounded">
+          <h2 class="section-heading mb-4" >
+            <span class="section-heading-upper">{{mascotaingresada.nombre}}</span>  
+          </h2>
+          <p class="mb-3">Alimentacion: {{mascotaingresada.alimentacion}}</p>
+          <p class="mb-3">Edad: {{mascotaingresada.edad}}</p>
+          <p class="mb-3">Raza: {{mascotaingresada.raza}}</p>
+          {%for mascotaadoptada in Mascotas_adoptadas%}
+          {%if mascotaadoptada.mascota.nombre == mascotaingresada.nombre%}
+          <p class="mb-3">Estado: Mascota adoptada</p>
+          {%else%}
+          {%endif%}
+          {%endfor%}
+          {% if user.is_authenticated and user.profile.permiso == "administrador" or user.profile.permiso == "Colaborador"%}
+          <a class="btn btn-primary" href="{% url 'mascota_edit' mascotaingresada.id%}">Editar</a>
+          <a class="btn btn-danger" href="{% url 'mascota_delete' mascotaingresada.id%}">Borrar </a>
+          {%else%}
+          {%endif%}
+        </div>
+      </div>
+    </div>
+  </section>
+
+{%endfor%}
+{% if user.is_authenticated%}
+<a class="btn btn-primary" href="{% url 'ReporteMascotas'%}">Generar reporte</a>
+{% endif %}
+<p></p>
+
+{% if user.is_authenticated and  user.profile.permiso == "Colaborador"%}
+<a class="btn btn-primary" href="{% url 'ReporteMascotasInscritas'%}">Generar reporte de mascotas ingresadas</a>
+{% endif %}
+
+{% endblock %}

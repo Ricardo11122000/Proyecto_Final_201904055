@@ -1,0 +1,16 @@
+{% extends "ProyectoFinal2App/base.html" %}
+{%load static%}
+{%block content%}
+
+
+<div><p>Enviar aceptacion</p>
+
+<form action = "#" method="POST">{% csrf_token %}
+    <u1><input type="text" name = 'Email'>Correo: </input></u1>
+    <u1><input type="submit" value="Enviar" /></u1>
+
+</form>
+
+</div>
+
+{% endblock %}

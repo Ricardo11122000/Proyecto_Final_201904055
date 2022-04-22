@@ -1,0 +1,36 @@
+{% extends "ProyectoFinal2App/base.html" %}
+
+{%load static%}
+
+{% load crispy_forms_tags %}
+
+{%block content%}
+
+<div>
+    
+<p>   
+    {% if submitted  %}
+
+        La mascota fue registrada exitosamente
+
+    {% else %}
+
+    <div style="width: 45%; margin: auto;">
+
+        <form action=""  method="POST" enctype="multipart/form-data" >                               
+            {{ form|crispy }}
+            <button type="submit" class="btn btn-success">Registrar</button>
+        </form>
+
+    </div>
+
+    {% endif %}
+</p>
+{% if user.is_authenticated and  user.profile.permiso == "Colaborador"%}
+<a class="btn btn-primary" href="{% url 'IngresoVacuna'%}">Ingresar vacunas</a>
+{% else %}
+{% endif %}
+
+</div>
+
+{% endblock %}

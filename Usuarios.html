@@ -1,0 +1,58 @@
+{% extends "ProyectoFinal2App/base.html" %}
+
+{%load static%}
+
+{%block content%}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+            <table class="table table-sm table-hover">
+                <thread>
+                    <tr>
+                        <td>Username</td>
+                        <td>Nombre</td>
+                        <td>Permiso</td>
+                        <td colspan="2">Acciones</td>
+                    </tr>
+                </thread>
+                <tbody>
+                {% if usuarios_creados %}
+                {% for usuario in usuarios_creados %}
+                <tr>
+                    <td>{{ usuario.username }}</td>
+                    <td>{{ usuario.first_name }} {{ usuario.last_name }}</td>
+                    <td> {{ usuario.profile.permiso }} </td>
+                    <td>
+                    <a class="btn btn-primary btn-sm" href="{% url 'profile_admin' usuario.id %}">Editar</a> 
+                    </td>
+                    <td>
+                       <a class="btn btn-danger btn-sm"
+                           href="{% url 'usuario_delete' usuario.id %}">Eliminar</a> 
+                    </td>
+                </tr>
+                {% endfor %}
+                {% else %}
+                <h4 class="alert alert-warning" role="alert">No hay usuarios registrados.</h4>
+                {% endif %}
+                </tbody>
+            </table>
+            <td>
+            <a class="btn btn-primary btn-sm" href="{% url 'DesbloquearUsuarios' %}">Desbloquear usuarios</a> 
+            </td>
+            <p></p>
+            <td>
+            <a class="btn btn-primary btn-sm" href="{% url 'ReporteUsuarios' %}">Generar reporte</a> 
+            </td>
+            <p></p>
+            <td>
+            <a class="btn btn-primary btn-sm" href="{% url 'ReporteAccionesRealizadas' %}">Generar reporte de actividades</a> 
+            </td>
+        </div>
+        <div class="col-md-2"></div>
+    </div>
+</div>
+
+{% endblock %}
+

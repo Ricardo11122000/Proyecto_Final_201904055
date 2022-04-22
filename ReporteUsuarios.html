@@ -1,0 +1,80 @@
+<head>
+
+    {%load static%}
+
+    <!-- Bootstrap -->
+    <link href="{% static 'ProyectoFinal2App/vendor/bootstrap/css/bootstrap.min.css'%}" rel="stylesheet">
+
+     <!-- Fonts -->
+    
+     <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300&display=swap" rel="stylesheet"> 
+     <link href="https://fonts.googleapis.com/css?family=Lora:400,400i,700,700i" rel="stylesheet">
+     
+
+    <!-- Styles -->
+    <link href="{% static 'ProyectoFinal2App/css/gestion.css'%}" rel="stylesheet">
+
+    
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+                <table class="table table-sm table-hover">
+                    <thread>
+                        <tr>
+                            <td>Username</td>
+                            <td>Nombre</td>
+                            <td>Correo</td>
+                            <td>Permiso</td>
+                        </tr>
+                    </thread>
+                    <tbody>
+                    {% for usuario in usuarios_creados %}
+                    <tr>
+                        <td>{{ usuario.username }}</td>
+                        <td>{{ usuario.first_name }} {{ usuario.last_name }}</td>
+                        <td> {{usuario.email}}</td>
+                        <td> {{ usuario.profile.permiso }} </td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-2"></div>
+        </div>
+    </div>
+
+
+</body>
+
+
+ <!-- Navbar -->
+
+  
+
+
+ 
+{% block content %}
+
+
+
+
+ {% endblock %} 
+
+  
+
+      
+	        
+
+    <!-- Bootstrap -->
+    <script src="{% static 'ProyectoFinal2App/vendor/jquery/jquery.min.js'%}"></script>
+    <script src="{% static 'ProyectoFinal2App/vendor/bootstrap/js/bootstrap.bundle.min.js'%}"></script>
+
+</body>
+
+
+</html>

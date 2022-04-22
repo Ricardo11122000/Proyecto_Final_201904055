@@ -1,0 +1,65 @@
+{% extends "ProyectoFinal2App/base.html" %}
+
+{%load static%}
+
+{%block content%}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-0"></div>
+        <div class="col-md-12">
+            <table class="table table-sm table-hover">
+                <thread>
+                    <tr>
+                        <td>N° de Solicitud</td>
+                        <td>Estado</td>
+                        <td>Adoptante</td>
+                        <td>Correo</td>
+                        <td>Nombre de mascota</td>
+                        <td colspan="2">Acciones</td>
+                        <td colspan="2">Enviar comunicado</td>
+                    </tr>
+                </thread>
+                <tbody>
+                {% if Solicitudes  %}
+                {% for solicitud in Solicitudes %}
+                
+   
+                <tr>
+                    
+                    <td>{{ solicitud.id }}</td>
+                    {%for adopcion in Adopciones%}
+                    {%if adopcion.mascota.nombre == solicitud.mascota.nombre%}
+                    <td>Aceptada</td>
+                    {%else%}
+                    {%endif%}
+                    {%endfor%}
+                    <td>{{ solicitud.persona.nombre }} {{ solicitud.persona.apellido }}</td>
+                    <td>{{solicitud.persona.email}}</td>
+                    <td>{{ solicitud.mascota.nombre }}</td>
+                    <td>
+                        <a class="btn btn-primary btn-sm" href="{% url 'AsignarMascota'  %}">Aceptar</a>
+                    </td>
+                    <td>
+                       <a class="btn btn-danger btn-sm"
+                           href="{% url 'solicitud_eliminar' solicitud.id %}">Eliminar</a>
+                    </td>
+                    <td>
+                        <a class="btn btn-primary btn-sm" href="{% url 'EnviarAceptacion'  %}">Enviar</a>
+                    </td>
+                </tr>
+               
+                {%endfor%}
+                {% else %}
+                <h4 class="alert alert-warning" role="alert">No hay adopciones registradas.</h4>
+                {% endif %}
+                </tbody>
+               
+                
+            </table>
+        </div>
+        <div class="col-md-2"></div>
+    </div>
+</div>
+
+{% endblock %}
